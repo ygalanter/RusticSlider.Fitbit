@@ -1,0 +1,10 @@
+{
+  "fitbit": {
+    "appUUID": "946b783b-8feb-4b6f-9787-b107dea52ff5",
+    "appType": "clockface",
+    "appDisplayName": "Rustic Slider",
+    "iconFile": "resources/icon.png",
+    "wipeColor": "#607d8b",
+    "requestedPermissions": []
+  }
+}

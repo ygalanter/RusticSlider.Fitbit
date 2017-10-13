@@ -1,0 +1,70 @@
+<svg viewport-fill="fb-black">
+  
+  <defs>
+    <symbol id="h1a">
+     <image id="h1animimg" x="2" y="-64" width="80" height="126"  >
+      </image>  
+        <animate id="bla" attributeName="y"  begin="enable" final="keep" from="0" to="124" dur="1" />
+       
+    </symbol>
+      
+     <symbol id="h2a"> 
+     <image id="h2animimg" x="89" y="-64" width="80" height="126"  >
+     </image>
+       <animate attributeName="y"  begin="enable" final="keep" from="0" to="124" dur="1" />
+        
+    </symbol>       
+       
+     <symbol id="m1a">  
+     <image id="m1animimg"  x="179" y="-64" width="80" height="126"  >
+    </image>
+    <animate attributeName="y"  begin="enable" final="keep" from="0" to="124" dur="1" />
+        
+    </symbol>       
+       
+     <symbol id="m2a">  
+     <image id="m2animimg"  x="266" y="-64" width="80" height="126" >
+    </image>  
+        <animate attributeName="y"  begin="enable" final="keep" from="0" to="124" dur="1" />
+        
+  </symbol>       
+       
+</defs> 
+  
+<svg>  
+  
+ <!--   Images to display time -->
+ <image href="digits/0.png" id="h1permimg" x="2" y="62" width="80" height="126" />
+ <image href="digits/0.png" id="h2permimg" x="89" y="62" width="80" height="126" />
+ <image href="digits/0.png" id="m1permimg" x="179" y="62" width="80" height="126"/>
+ <image href="digits/0.png" id="m2permimg" x="266" y="62" width="80" height="126" />  
+  
+  
+<!--  Images to animate  -->
+<use id="h1anim" href="#h1a" />   
+<use id="h2anim" href="#h2a" />   
+<use id="m1anim" href="#m1a" />   
+<use id="m2anim" href="#m2a" />   
+
+  
+  
+<!--  To hide animated images on top  -->
+<rect x="0" y="0" width="348" height="62" fill="fb-black" /> 
+  
+<!-- Date   -->
+<text id = "month" x="4" y="48"  class="Rustic"  text-anchor = "start" />   
+<text id = "day" x="344" y="48"  class="Rustic"  text-anchor = "end" />   
+  
+  
+<!--  To hide animated images on bottom  -->
+<rect x="0" y="188" width="348" height="62" fill="fb-black" /> 
+  
+<!-- Date   -->
+<text id = "dow" x="4" y="246"  class="Rustic"  text-anchor = "start" />   
+<text id = "ampm" x="344" y="246"  class="Rustic"  text-anchor = "end" />    
+  
+  
+</svg>  
+
+  
+</svg>
