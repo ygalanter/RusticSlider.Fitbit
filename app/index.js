@@ -2,26 +2,55 @@
 import clock from "clock";
 import document from "document";
 import {display} from "display";
+import * as messaging from "messaging";
+import * as fs from "fs";
+import { me } from "appbit";
 import {preferences} from "user-settings";
 import dtlib from "../common/datetimelib"
 
-// get handle on stationary images for hours and minutes
-let h1permimg = document.getElementById("h1permimg");
-let h2permimg = document.getElementById("h2permimg");
-let m1permimg = document.getElementById("m1permimg");
-let m2permimg = document.getElementById("m2permimg");
+// whether to skip time animation and switch to new time fast
+const ANIMATION_DISABLE_ALWAYS = 0;
+const ANIMATION_DISABLE_ON_SCREEN_WAKEUP = 1;
+const ANIMATION_ENABLE_ALWAYS = 2;
+let userSettings;
+let screenJustAwoke = true;
 
-// get handle on moving images for hours and minutes
-let h1animimg = document.getElementById("h1animimg");
-let h2animimg = document.getElementById("h2animimg");
-let m1animimg = document.getElementById("m1animimg");
-let m2animimg = document.getElementById("m2animimg");
 
-// het handle on animated objects
-let h1anim = document.getElementById("h1anim");
-let h2anim = document.getElementById("h2anim");
-let m1anim = document.getElementById("m1anim");
-let m2anim = document.getElementById("m2anim");
+
+// change time animations
+function changeTime(position, oldTime, newTime) {
+ 
+    let permimg = document.getElementById(`${position}permimg`);
+    let animimg = document.getElementById(`${position}animimg`);
+
+    // if animation is disabled - assign new time to both images
+    if (userSettings.timeAnimation == ANIMATION_DISABLE_ALWAYS || 
+        (userSettings.timeAnimation == ANIMATION_DISABLE_ON_SCREEN_WAKEUP && screenJustAwoke)) {
+        
+        permimg.href = `digits/${newTime}.png`; // new
+        animimg.href = `digits/${newTime}.png`; // new
+      
+    } else { //   If animation enabled:
+        
+        //   1. assign current time digit to permanent image
+        //   2. assign new time digit to moving image
+        //   3. animate image
+        permimg.href = `digits/${oldTime}.png`; // old
+        animimg.href = `digits/${newTime}.png`; // new
+        document.getElementById(`${position}anim`).animate = true;
+      
+    }
+    
+}
+
+
+// trying to get user settings if saved before
+try {
+  userSettings = fs.readFileSync("user_settings.json", "json");
+} catch (e) {
+  userSettings = {timeAnimation: ANIMATION_DISABLE_ON_SCREEN_WAKEUP}
+}
+
 
 // get handle on textboxes for date, DoW, AM/PM
 let monthlbl = document.getElementById("month");
@@ -57,40 +86,32 @@ function updateClock() {
   let m1 = Math.floor(mins/10);
   let m2 = mins % 10;
   
-  // if first digit of hour changed:
-  //   1. assign current time digit to permanent image
-  //   2. assign new time digit to moving image
-  //   3. animate image
+   console.log("Animation settings: " + userSettings.timeAnimation);
+   console.log("Screen just awoke: " + screenJustAwoke);
+  
+
   if (timeh1 != h1) {
-    h1permimg.href = `digits/${timeh1}.png`;
-    h1animimg.href = `digits/${h1}.png`;
-    h1anim.animate = true;
+    changeTime('h1', timeh1, h1)
     timeh1 = h1;
   }
   
   // same as H1 for second hour digit
   if (timeh2 != h2) {
-    h2permimg.href = `digits/${timeh2}.png`;
-    h2animimg.href = `digits/${h2}.png`;
-    h2anim.animate = true;
+    changeTime('h2', timeh2, h2)
     timeh2 = h2;
   }
   
   
   // same as h1 for first minute digit
   if (timem1 != m1) {
-    m1permimg.href = `digits/${timem1}.png`;
-    m1animimg.href = `digits/${m1}.png`;
-    m1anim.animate = true;
+    changeTime('m1', timem1, m1)
     timem1 = m1;
   }
   
   
   // same as h1 for second minute digit
   if (timem2 != m2) {
-    m2permimg.href = `digits/${timem2}.png`;
-    m2animimg.href = `digits/${m2}.png`;
-    m2anim.animate = true;
+    changeTime('m2', timem2, m2)
     timem2 = m2;
   }
   
@@ -105,6 +126,9 @@ function updateClock() {
   
   // displaying AM/PM or 24H
   ampmlbl.innerText = dtlib.getAmApm(today.getHours());
+  
+  // resetting screen awoke flag
+  screenJustAwoke = false;
 } 
  
 // assigning clock tick event handler
@@ -112,3 +136,36 @@ clock.ontick = () => updateClock();
 
 // and cicking off first time change
 updateClock();
+
+// Message is received
+messaging.peerSocket.onmessage = evt => {
+  
+  switch (evt.data.key) {
+      case "timeDigitanimation": // if this is animation setting
+          userSettings.timeAnimation = JSON.parse(evt.data.newValue).values[0].value;
+          console.log("settings received: " + userSettings.timeAnimation);
+          break;
+  };
+      
+}
+
+// Message socket opens
+messaging.peerSocket.onopen = () => {
+  console.log("App Socket Open");
+};
+
+// Message socket closes
+messaging.peerSocket.close = () => {
+  console.log("App Socket Closed");
+};
+
+// on app exit collect settings 
+me.onunload = () => {
+    fs.writeFileSync("user_settings.json", userSettings, "json");
+}
+
+// on display on/off set the flag
+display.onchange = () => {
+  screenJustAwoke = display.on;
+}
+
