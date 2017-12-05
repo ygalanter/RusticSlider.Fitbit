@@ -59,7 +59,7 @@
 <!--  To hide animated images on bottom  -->
 <rect x="0" y="188" width="348" height="62" fill="fb-black" /> 
   
-<!-- Date   -->
+<!-- DoW/ampm   -->
 <text id = "dow" x="4" y="246"  class="Rustic"  text-anchor = "start" />   
 <text id = "ampm" x="344" y="246"  class="Rustic"  text-anchor = "end" />    
   

@@ -6,7 +6,7 @@ console.log("Companion Started");
 // Message socket opens
 messaging.peerSocket.onopen = () => {
   console.log("Companion Socket Open");
-  restoreSettings();
+  //restoreSettings();
 };
 
 // Message socket closes

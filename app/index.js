@@ -37,7 +37,7 @@ function changeTime(position, oldTime, newTime) {
         //   3. animate image
         permimg.href = `digits/${oldTime}.png`; // old
         animimg.href = `digits/${newTime}.png`; // new
-        document.getElementById(`${position}anim`).animate = true;
+        document.getElementById(`${position}anim`).animate('enable');
       
     }
     
@@ -85,10 +85,6 @@ function updateClock() {
   let mins = today.getMinutes();
   let m1 = Math.floor(mins/10);
   let m2 = mins % 10;
-  
-   console.log("Animation settings: " + userSettings.timeAnimation);
-   console.log("Screen just awoke: " + screenJustAwoke);
-  
 
   if (timeh1 != h1) {
     changeTime('h1', timeh1, h1)
@@ -116,16 +112,16 @@ function updateClock() {
   }
   
   // displaying short month name in English
-  monthlbl.innerText = dtlib.getMonthNameShort(dtlib.LANGUAGES.ENGLISH, today.getMonth());
+  monthlbl.text = dtlib.getMonthNameShort(dtlib.LANGUAGES.ENGLISH, today.getMonth());
   
   // displaying 0-prepended day of the month
-  daylbl.innerText = dtlib.zeroPad(today.getDate());
+  daylbl.text = dtlib.zeroPad(today.getDate());
   
   // displaying shot day of the week in English
-  dowlbl.innerText = dtlib.getDowNameShort(dtlib.LANGUAGES.ENGLISH, today.getDay());
+  dowlbl.text = dtlib.getDowNameShort(dtlib.LANGUAGES.ENGLISH, today.getDay());
   
   // displaying AM/PM or 24H
-  ampmlbl.innerText = dtlib.getAmApm(today.getHours());
+  ampmlbl.text = dtlib.getAmApm(today.getHours());
   
   // resetting screen awoke flag
   screenJustAwoke = false;
@@ -143,20 +139,19 @@ messaging.peerSocket.onmessage = evt => {
   switch (evt.data.key) {
       case "timeDigitanimation": // if this is animation setting
           userSettings.timeAnimation = JSON.parse(evt.data.newValue).values[0].value;
-          console.log("settings received: " + userSettings.timeAnimation);
-          break;
+         break;
   };
       
 }
 
 // Message socket opens
 messaging.peerSocket.onopen = () => {
-  console.log("App Socket Open");
+  
 };
 
 // Message socket closes
 messaging.peerSocket.close = () => {
-  console.log("App Socket Closed");
+  
 };
 
 // on app exit collect settings 
@@ -167,5 +162,6 @@ me.onunload = () => {
 // on display on/off set the flag
 display.onchange = () => {
   screenJustAwoke = display.on;
+  updateClock();
 }
 
